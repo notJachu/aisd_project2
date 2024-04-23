@@ -204,12 +204,12 @@ bool Board::isBoardCorrect() {
 	return false;
 }
 
-bool Board::isGameOver() {
+FIELD_STATE Board::isGameOver() {
 	// first check red player then blue
 
 	if (!isBoardCorrect()) {
-		std::cout << "NO" << std::endl;
-		return false;
+		//std::cout << "NO" << std::endl;
+		return EMPTY;
 	}
 
 	for (int i = 0; i < size; i++) {
@@ -217,34 +217,48 @@ bool Board::isGameOver() {
 		// RED
 		if (board[i][0] == RED && !visited[i][0]) {
 			if (traverse({ i, 0 }, RED, { -1, size - 1 })) {
-				std::cout << "YES RED" << std::endl;
-				return true;
+				//std::cout << "YES RED" << std::endl;
+				return RED;			 
 			}
 		}
 		if (board[i][size - 1] == RED && !visited[i][size - 1]) {
 			if (traverse({ i, size - 1 }, RED, { -1, 0 })) {
-				std::cout << "YES RED" << std::endl;
-				return true;
+				//std::cout << "YES RED" << std::endl;
+				return RED;
 			}
 		}
 
 		// BLUE
 		if (board[0][i] == BLUE && !visited[0][i]) {
 			if (traverse({ 0, i }, BLUE, { size - 1, -1 })) {
-				std::cout << "YES BLUE" << std::endl;
-				return true;
+				//std::cout << "YES BLUE" << std::endl;
+				return BLUE;
 			}
 		}
 		if (board[size - 1][i] == BLUE && !visited[size - 1][i]) {
 			if (traverse({ size - 1, i }, BLUE, { 0, -1 })) {
-				std::cout << "YES BLUE" << std::endl;
-				return true;
+				//std::cout << "YES BLUE" << std::endl;
+				return BLUE;
 			}
 		}
 
 	}
-	std::cout << "NO" << std::endl;
-	return false;
+	//std::cout << "NO" << std::endl;
+	return EMPTY;
+}
+
+bool Board::isBoardPossible() {
+	if (!isBoardCorrect()) return false;
+
+	int counter = 0;
+	for (int i = 0; i < size; i++) {
+		if (isGameOver() != EMPTY) {
+			counter++;
+		}
+	}
+
+	reset_visited();
+	return counter <= 1;
 }
 
 int Board::getSize() {

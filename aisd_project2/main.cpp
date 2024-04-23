@@ -49,7 +49,29 @@ int main() {
 			board->isBoardCorrect() ? cout << "YES" << endl : cout << "NO" << endl;
 		}
 		else if (input.compare("IS_GAME_OVER") == 0) {
-			board->isGameOver();
+			switch (board->isGameOver())
+			{
+			case EMPTY:
+				cout << "NO" << endl;
+				break;
+			case RED:
+				cout << "YES RED" << endl;
+				break;
+			case BLUE:
+				cout << "YES BLUE" << endl;
+				break;
+			default:
+				break;
+			}
+			board->reset_visited();
+		}
+		else if (input.compare("IS_BOARD_POSSIBLE") == 0) {
+			if (board->isBoardPossible()) {
+				cout << "YES" << endl;
+			}
+			else {
+				cout << "NO" << endl;
+			}
 		}
 
 	}

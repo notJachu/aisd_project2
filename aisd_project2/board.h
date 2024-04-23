@@ -10,7 +10,6 @@ private:
 	int red;
 	int blue;
 	void read_board();
-	void reset_visited();
 	bool traverse(Point start, FIELD_STATE state, Point target);
 
 
@@ -23,8 +22,10 @@ public:
 	FIELD_STATE getFieldState(int x, int y);
 	void setConnection(int x, int y, int direction, bool value);
 	bool getConnection(int x, int y, int direction);
+	void reset_visited();
 	bool isBoardCorrect();
-	bool isGameOver();
+	FIELD_STATE isGameOver(); // reusing enum to tell who won EMPTY == NO
+	bool isBoardPossible();
 	int getSize();
 	int getRed();
 	int getBlue();
