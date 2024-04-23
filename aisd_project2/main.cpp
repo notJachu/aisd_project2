@@ -33,13 +33,20 @@ int main() {
 				board = nullptr;
 			}
 			board = new Board(size);
-			board->print_board();
+			//board->print_board();
 		}
 		else if (input[0] == 'B') {
 			if (board != nullptr) {
 				cout << board->getSize() << endl;
 			}
 				
+		}
+		else if (input.compare("PAWNS_NUMBER") == 0) {
+			int x = (board->getBlue() + board->getRed());
+			cout << x << endl;
+		}
+		else if (input.compare("IS_BOARD_CORRECT") == 0) {
+			board->isBoardCorrect() ? cout << "YES" << endl : cout << "NO" << endl;
 		}
 
 	}

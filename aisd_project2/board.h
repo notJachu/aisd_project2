@@ -6,7 +6,8 @@ class Board {
 private:
 	FIELD board[11][11];
 	int size;
-	int getNextState(std::string input, int row);
+	int red;
+	int blue;
 	void read_board();
 
 public:
@@ -18,5 +19,8 @@ public:
 	FIELD_STATE getFieldState(int x, int y);
 	void setConnection(int x, int y, int direction, bool value);
 	bool getConnection(int x, int y, int direction);
+	bool isBoardCorrect();
 	int getSize();
+	int getRed();
+	int getBlue();
 };

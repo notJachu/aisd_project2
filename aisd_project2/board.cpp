@@ -2,23 +2,6 @@
 #include <iostream>
 #include <string>
 
-int Board::getNextState(std::string input, int row) {
-	static int index;
-	static int current_row;
-	if (index == 0) {
-		current_row = row;
-	}
-	else if (current_row != row) {
-		index = 0;
-		current_row = row;
-	}
-
-	while (input[index] != '<') {
-		index++;
-	}
-	index += 2;
-	return index;
-}
 
 void Board::read_board() {
 	std::string input;
@@ -27,16 +10,23 @@ void Board::read_board() {
 	for (int i = 0; i < size; i++) {
 		x = i;
 		y = 0;
+		int index = 0;
 		getline(std::cin, input);
 		do {
 			//logic for parsing input
-			int index = getNextState(input, i);
+			while (input[index] != '<') {
+				index++;
+			}
+
+			index += 2; // offset to letter
 			char state = input[index]; 
 			if (state == 'r') {
 				board[x][y].state = RED;
+				red++;
 			}
 			else if (state == 'b') {
 				board[x][y].state = BLUE;
+				blue++;
 			}
 			else {
 				board[x][y].state = EMPTY;
@@ -49,16 +39,23 @@ void Board::read_board() {
 	for (int i = 1; i < size; i++) {
 		y = i;
 		x = size - 1;
+		int index = 0;
 		getline(std::cin, input);
 		do {
 			//logic for parsing input
-			int index = getNextState(input, i);
+			while (input[index] != '<') {
+				index++;
+			}
+
+			index += 2; // offset to letter
 			char state = input[index]; 
 			if (state == 'r') {
 				board[x][y].state = RED;
+				red++;
 			}
 			else if (state == 'b') {
 				board[x][y].state = BLUE;
+				blue++;
 			}
 			else {
 				board[x][y].state = EMPTY;
@@ -75,6 +72,8 @@ void Board::read_board() {
 
 Board::Board(int size) {
 	this->size = size;
+	this->red = 0;
+	this->blue = 0;
 	read_board();
 }
 
@@ -117,6 +116,25 @@ bool Board::getConnection(int x, int y, int direction)
 	return false;
 }
 
+bool Board::isBoardCorrect() {
+	if (red == blue) {
+		return true;
+	}
+	else if (red - blue == 1) {
+		return true;
+	}
+
+	return false;
+}
+
 int Board::getSize() {
 	return this->size;
+}
+
+int Board::getBlue() {
+	return this->blue;
+}
+
+int Board::getRed() {
+	return this->red;
 }
