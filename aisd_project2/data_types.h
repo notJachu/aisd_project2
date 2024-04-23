@@ -21,3 +21,8 @@ typedef struct FIELD {
 	FIELD_STATE state;
 	CONNECTION_LIST connections;
 } FIELD;
+
+typedef struct Point {
+	int x;
+	int y;
+} Point;

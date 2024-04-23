@@ -4,11 +4,15 @@
 
 class Board {
 private:
-	FIELD board[11][11];
+	FIELD_STATE board[11][11];
+	bool visited[11][11];
 	int size;
 	int red;
 	int blue;
 	void read_board();
+	void reset_visited();
+	bool traverse(Point start, FIELD_STATE state, Point target);
+
 
 public:
 	Board(int size);
@@ -20,6 +24,7 @@ public:
 	void setConnection(int x, int y, int direction, bool value);
 	bool getConnection(int x, int y, int direction);
 	bool isBoardCorrect();
+	bool isGameOver();
 	int getSize();
 	int getRed();
 	int getBlue();

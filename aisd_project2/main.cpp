@@ -48,6 +48,9 @@ int main() {
 		else if (input.compare("IS_BOARD_CORRECT") == 0) {
 			board->isBoardCorrect() ? cout << "YES" << endl : cout << "NO" << endl;
 		}
+		else if (input.compare("IS_GAME_OVER") == 0) {
+			board->isGameOver();
+		}
 
 	}
 	
