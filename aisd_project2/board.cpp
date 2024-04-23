@@ -92,7 +92,7 @@ bool Board::traverse(Point start, FIELD_STATE state, Point target) {
 		}
 	}
 
-	visited[target.x][target.y] = true;
+	visited[start.x][start.y] = true;
 
 	// LEFT
 	if (start.x - 1 >= 0 && board[start.x - 1][start.y] == state && !visited[start.x - 1][start.y]) {
