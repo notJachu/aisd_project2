@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <iostream>
+#include <string>
 #include "data_types.h"
+#include "board.h"
 
 using namespace std;
 
@@ -13,13 +16,34 @@ int main() {
 
 	printf("UP: %d\n", connections[UP]);*/
 
-	int count = 0;
-	char in;
-	do {
-		in = getchar();
-		count++;
-	} while (in != '-');
-	int size = ((count - 1) / 3) + 1;
-	printf("Size: %d\n", size);
+	Board* board = nullptr;
+	string input;
+
+	while (cin.good()) {
+		getline(cin, input);
+		if (input[0] == ' ') {
+			int size = 0;
+			while (input[size] != '-') {
+				size++;
+			}
+			size = ((size - 1) / 3) + 1;
+			//cout << "Size: " << size << endl;
+			if (board != nullptr) {
+				delete board;
+				board = nullptr;
+			}
+			board = new Board(size);
+			board->print_board();
+		}
+		else if (input[0] == 'B') {
+			if (board != nullptr) {
+				cout << board->getSize() << endl;
+			}
+				
+		}
+
+	}
+	
+
 	return 0;
 }
