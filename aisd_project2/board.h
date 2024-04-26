@@ -6,12 +6,19 @@ class Board {
 private:
 	FIELD_STATE board[11][11];
 	bool visited[11][11];
+	bool removed[11][11];
 	int size;
 	int red;
 	int blue;
-	void read_board();
-	bool traverse(Point start, FIELD_STATE state, Point target);
-
+	void read_board(); 
+	void traverse(Point start, FIELD_STATE state);
+	void check_with_removed(Point start, FIELD_STATE state);
+	int win_counter;
+	bool traverse_mode; // true - chcecking visited, false - checking not visited
+	int reached_top;
+	int reached_bottom;
+	bool is_board_possible;
+	bool add_back;		// flag for adding back to removed when path was not added
 
 public:
 	Board(int size);
@@ -23,6 +30,8 @@ public:
 	void setConnection(int x, int y, int direction, bool value);
 	bool getConnection(int x, int y, int direction);
 	void reset_visited();
+	void reset_win_counter();
+	void setTraverseMode(bool mode);
 	bool isBoardCorrect();
 	FIELD_STATE isGameOver(); // reusing enum to tell who won EMPTY == NO
 	bool isBoardPossible();

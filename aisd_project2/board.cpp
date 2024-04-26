@@ -77,72 +77,172 @@ void Board::reset_visited() {
 	}
 }
 
-bool Board::traverse(Point start, FIELD_STATE state, Point target) {
-	// ignoring x or y according to player
-	// using -1 as flag
+void Board::reset_win_counter() {
+	this->win_counter = 0;
+}
 
-	if (target.x == -1) {
-		if (target.y == start.y) {
-			return true;
-		}
-	}
-	else if (target.y == -1) {
-		if (target.x == start.x) {
-			return true;
-		}
+void Board::setTraverseMode(bool mode) {
+	this->traverse_mode = mode;
+}
+
+void Board::traverse(Point start, FIELD_STATE state) {
+
+	// firse validate if position is possible
+	// if not return
+
+	if (start.x < 0 || start.y < 0 || start.x >= size || start.y >= size) {
+		return;
 	}
 
-	visited[start.x][start.y] = true;
+	if (visited[start.x][start.y] != traverse_mode) {
+		return;
+	}
+
+	if (board[start.x][start.y] != state) {
+		return;
+	}
+
+	visited[start.x][start.y] = !traverse_mode;
+	removed[start.x][start.y] = !add_back;
+
+	switch (state) {
+	case EMPTY:
+		break;
+	case RED:
+		if (start.y == 0) {
+			reached_top++;
+			//if (size > 2) return;			// for boards smaller that 3x3 it breaks
+		}
+		if (start.y == size - 1) {
+			reached_bottom++;
+			//if (size > 2) return;			// for boards smaller that 3x3 it breaks
+		}
+		break;
+	case BLUE:
+		if (start.x == 0) {
+			reached_top++;
+			//if (size > 2) return;			// for boards smaller that 3x3 it breaks
+		}
+		if (start.x == size - 1) {
+			reached_bottom++;
+			//if (size > 2) return;			// for boards smaller that 3x3 it breaks
+		}
+		break;
+	default:
+		break;
+	}
+
 
 	// LEFT
-	if (start.x - 1 >= 0 && board[start.x - 1][start.y] == state && !visited[start.x - 1][start.y]) {
-		visited[start.x - 1][start.y] = true;
-		if (traverse({ start.x - 1, start.y }, state, target)) {
-			return true;
-		}
-	}
+		traverse({ start.x - 1, start.y }, state);
 
 	// RIGHT
-	if (start.x + 1 < size && board[start.x + 1][start.y] == state && !visited[start.x + 1][start.y]) {
-		visited[start.x + 1][start.y] = true;
-		if (traverse({ start.x + 1, start.y }, state, target)) {
-			return true;
-		}
+		traverse({ start.x + 1, start.y }, state);
+
+	// UP
+		traverse({ start.x, start.y - 1 }, state);
+
+	// DOWN
+		traverse({ start.x, start.y + 1 }, state);
+
+	// UP LEFT
+		traverse({ start.x - 1, start.y - 1 }, state);
+
+	// DOWN RIGHT
+		traverse({ start.x + 1, start.y + 1 }, state);
+
+	return;
+}
+
+void Board::check_with_removed(Point start, FIELD_STATE state) {
+														
+	// its pretty much the same as traverse but with extra if
+
+
+	visited[start.x][start.y] = !traverse_mode;
+	is_board_possible = false;
+
+	bool local_reached_top[6] = { false, false, false, false, false, false };
+	bool local_reached_bottom[6] = { false, false, false, false, false, false };
+										  
+	// LEFT
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x - 1, start.y }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[0] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[0] = true;
+	}
+
+
+	// RIGHT
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x + 1, start.y }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[1] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[1] = true;
 	}
 
 	// UP
-	if (start.y - 1 >= 0 && board[start.x][start.y - 1] == state && !visited[start.x][start.y - 1]) {
-		visited[start.x][start.y - 1] = true;
-		if (traverse({ start.x, start.y - 1 }, state, target)) {
-			return true;
-		}
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x, start.y - 1 }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[2] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[2] = true;
 	}
 
 	// DOWN
-	if (start.y + 1 < size && board[start.x][start.y + 1] == state && !visited[start.x][start.y + 1]) {
-		visited[start.x][start.y + 1] = true;
-		if (traverse({ start.x, start.y + 1 }, state, target)) {
-			return true;
-		}
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x, start.y + 1 }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[3] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[3] = true;
 	}
 
 	// UP LEFT
-	if (start.x - 1 >= 0 && start.y - 1 >= 0 && board[start.x - 1][start.y - 1] == state && !visited[start.x - 1][start.y - 1]) {
-		visited[start.x - 1][start.y - 1] = true;
-		if (traverse({ start.x - 1, start.y - 1 }, state, target)) {
-			return true;
-		}
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x - 1, start.y - 1 }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[4] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[4] = true;
 	}
 
 	// DOWN RIGHT
-	if (start.x + 1 < size && start.y + 1 < size && board[start.x + 1][start.y + 1] == state && !visited[start.x + 1][start.y + 1]) {
-		visited[start.x + 1][start.y + 1] = true;
-		if (traverse({ start.x + 1, start.y + 1 }, state, target)) {
-			return true;
+	reached_bottom = 0;
+	reached_top = 0;
+	traverse({ start.x + 1, start.y + 1 }, state);
+	if (reached_bottom > 0) {
+		local_reached_bottom[5] = true;
+	}
+	if (reached_top > 0) {
+		local_reached_top[5] = true;
+	}
+
+
+	for (int i = 0; i < 6; i++) {
+		if (local_reached_bottom[i] && local_reached_top[i]) {
+			is_board_possible = false;
+			traverse_mode = false;
+			return;
 		}
 	}
 
-	return false;
+   is_board_possible = true;
+
 }
 
 
@@ -150,6 +250,9 @@ Board::Board(int size) {
 	this->size = size;
 	this->red = 0;
 	this->blue = 0;
+	this->win_counter = 0;
+	this->traverse_mode = false;
+	this->add_back = false;
 	reset_visited();
 	read_board();
 }
@@ -213,52 +316,108 @@ FIELD_STATE Board::isGameOver() {
 	}
 
 	for (int i = 0; i < size; i++) {
-
-		// RED
-		if (board[i][0] == RED && !visited[i][0]) {
-			if (traverse({ i, 0 }, RED, { -1, size - 1 })) {
-				//std::cout << "YES RED" << std::endl;
-				return RED;			 
-			}
+		for (int j = 0; j < size; j++) {
+			removed[i][j] = false;
 		}
-		if (board[i][size - 1] == RED && !visited[i][size - 1]) {
-			if (traverse({ i, size - 1 }, RED, { -1, 0 })) {
-				//std::cout << "YES RED" << std::endl;
-				return RED;
-			}
-		}
-
-		// BLUE
-		if (board[0][i] == BLUE && !visited[0][i]) {
-			if (traverse({ 0, i }, BLUE, { size - 1, -1 })) {
-				//std::cout << "YES BLUE" << std::endl;
-				return BLUE;
-			}
-		}
-		if (board[size - 1][i] == BLUE && !visited[size - 1][i]) {
-			if (traverse({ size - 1, i }, BLUE, { 0, -1 })) {
-				//std::cout << "YES BLUE" << std::endl;
-				return BLUE;
-			}
-		}
-
 	}
-	//std::cout << "NO" << std::endl;
-	return EMPTY;
+
+	reached_bottom = 0;
+	reached_top = 0;
+
+	int red_wins = 0;
+	int blue_wins = 0;
+
+	bool first_on_path = true;
+
+	FIELD_STATE weak_winner = EMPTY;	  // won but board is not possible
+
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			traverse_mode = false;
+			reached_bottom = 0;
+			reached_top = 0;
+			reset_visited();
+			if (board[i][j] != EMPTY) {
+				
+				if (board[i][j] == weak_winner && win_counter > 0) {
+					 first_on_path = !removed[i][j];
+				}
+				traverse({ i, j }, board[i][j]);
+				if (reached_bottom == 1 && reached_top == 1) {
+
+					weak_winner = board[i][j];
+					if (!first_on_path) {
+						continue;
+					}
+					first_on_path = false;
+					if (board[i][j] == RED) {
+						red_wins++;
+					}
+					else {
+						blue_wins++;
+					}
+					win_counter++;
+				}
+				else if (reached_bottom >= 1 && reached_top >= 1) {
+					weak_winner = board[i][j];
+					traverse_mode = true;
+					check_with_removed({ i, j }, board[i][j]);
+					
+					if (!first_on_path) {
+						continue;
+					}
+					if (is_board_possible) {
+						first_on_path = false;
+						if (board[i][j] == RED) {
+							red_wins++;
+						}
+						else {
+							blue_wins++;
+						}
+						win_counter++;
+					}
+					else {
+						add_back = true;
+						traverse({ i, j }, board[i][j]);
+						add_back = false;
+					}
+				}
+			}
+		}
+	}
+
+	if (weak_winner != EMPTY && win_counter == 0) {
+		win_counter = 10;						   // random value to accout for invalid path (2 joined paths won't be counted)
+	}
+	return weak_winner;
+
+	if (red_wins == 0 && blue_wins == 0) {
+		//std::cout << "NO" << std::endl;
+		return EMPTY;
+	}
+	else if (win_counter > 1) {
+		//std::cout << "NO" << std::endl;
+		return EMPTY;
+	}
+	else if (red_wins > 0) {
+		//std::cout << "YES RED" << std::endl;
+		return RED;
+	}
+	else {
+		//std::cout << "YES BLUE" << std::endl;
+		return BLUE;
+	}
+
 }
 
 bool Board::isBoardPossible() {
+	this->win_counter = 0;
 	if (!isBoardCorrect()) return false;
 
-	int counter = 0;
-	for (int i = 0; i < size; i++) {
-		if (isGameOver() != EMPTY) {
-			counter++;
-		}
-	}
+	isGameOver();
 
 	reset_visited();
-	return counter <= 1;
+	return win_counter <= 1;
 }
 
 int Board::getSize() {

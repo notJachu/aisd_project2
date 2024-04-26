@@ -3,6 +3,7 @@
 #include <string>
 #include "data_types.h"
 #include "board.h"
+#include <fstream>
 
 using namespace std;
 
@@ -18,6 +19,9 @@ int main() {
 
 	Board* board = nullptr;
 	string input;
+
+	fstream file;
+	file.open("test.txt", ios::out);
 
 	while (cin.good()) {
 		getline(cin, input);
@@ -49,33 +53,42 @@ int main() {
 			board->isBoardCorrect() ? cout << "YES" << endl : cout << "NO" << endl;
 		}
 		else if (input.compare("IS_GAME_OVER") == 0) {
+			board->reset_win_counter();
 			switch (board->isGameOver())
 			{
 			case EMPTY:
 				cout << "NO" << endl;
+				file << "NO" << endl;
 				break;
 			case RED:
 				cout << "YES RED" << endl;
+				file << "YES RED" << endl;
 				break;
 			case BLUE:
 				cout << "YES BLUE" << endl;
+				file << "YES BLUE" << endl;
 				break;
 			default:
 				break;
 			}
+			file << endl;
+			cout << endl;
 			board->reset_visited();
 		}
 		else if (input.compare("IS_BOARD_POSSIBLE") == 0) {
 			if (board->isBoardPossible()) {
 				cout << "YES" << endl;
+				file << "YES" << endl;
 			}
 			else {
 				cout << "NO" << endl;
+				file << "NO" << endl;
 			}
+			file << endl;
 		}
 
 	}
 	
-
+	file.close();
 	return 0;
 }
