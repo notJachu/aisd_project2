@@ -414,7 +414,23 @@ bool Board::isBoardPossible() {
 	this->win_counter = 0;
 	if (!isBoardCorrect()) return false;
 
-	isGameOver();
+	FIELD_STATE winner = isGameOver();
+
+	switch (winner)
+	{
+	case EMPTY:
+		break;
+	case RED:
+		if (red - 1 != blue)
+			return false;
+		break;
+	case BLUE:
+		if (red != blue)
+			return false;
+		break;
+	default:
+		break;
+	}
 
 	reset_visited();
 	return win_counter <= 1;
