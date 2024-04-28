@@ -19,9 +19,10 @@ int main() {
 
 	Board* board = nullptr;
 	string input;
+	int counter = 1;
 
-	//fstream file;
-	//file.open("test.txt", ios::out);
+	fstream file;
+	file.open("test.txt", ios::out);
 
 	while (cin.good()) {
 		getline(cin, input);
@@ -43,7 +44,7 @@ int main() {
 			if (board != nullptr) {
 				cout << board->getSize() << endl;
 			}
-				
+			
 		}
 		else if (input.compare("PAWNS_NUMBER") == 0) {
 			int x = (board->getBlue() + board->getRed());
@@ -86,9 +87,43 @@ int main() {
 			}
 			//file << endl;
 		}
+		// 15 is offset from end to start of the opponent mode
+		else if (input.substr(0, 3) == "CAN" && input[input.length() - 14] == 'N') {
+			FIELD_STATE player;
+			int moves = 0;
+			int offset = 4;	 // CAN_
+			if (input[offset] == 'R') {
+				player = RED;
+				offset += 4; // RED_
+			}
+			else {
+				player = BLUE;
+				offset += 5; // BLUE_
+			} 
+
+			offset += 7; // WIN_IN_
+
+			moves = int(input[offset]) - 48;  // ASCII to int
+			//cout << moves << endl;
+
+			if (board->canWinNaive(moves, player)) {
+				cout << "YES" << endl;
+				file << "YES" << endl;
+			}
+			else {
+				cout << "NO" << endl;
+				file << "NO" << endl;
+			}
+			if (counter == 4) {
+				file << endl;
+				counter = 0;
+			}
+			counter++;
+			//file << endl;
+		}
 
 	}
 	
-	//file.close();
+	file.close();
 	return 0;
 }

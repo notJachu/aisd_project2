@@ -389,6 +389,8 @@ FIELD_STATE Board::isGameOver() {
 	if (weak_winner != EMPTY && win_counter == 0) {
 		win_counter = 10;						   // random value to accout for invalid path (2 joined paths won't be counted)
 	}
+
+	reset_visited();
 	return weak_winner;
 
 	if (red_wins == 0 && blue_wins == 0) {
@@ -436,17 +438,137 @@ bool Board::isBoardPossible() {
 	return win_counter <= 1;
 }
 
+bool Board::check_util(Point offset, FIELD_STATE player, int moves) {
+		board[offset.x][offset.y] = player;
+
+		FIELD_STATE winner = isGameOver();
+		if (winner == player) {
+			board[offset.x][offset.y] = EMPTY;
+			return true;
+		}
+		board[offset.x][offset.y] = EMPTY;
+		return false;
+}
+
+
+bool Board::chceckAdjecent(Point start, FIELD_STATE state, int moves) {
+
+	if (moves == 1) {
+		if (check_util(start, state, moves)) {
+			return true;
+		}
+	}
+	else {
+
+		board[start.x][start.y] = state;
+
+		// LEFT
+		if (start.x - 1 >= 0 && board[start.x - 1][start.y] == EMPTY) {
+			if (check_util({ start.x - 1, start.y }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+
+		// RIGHT
+		if (start.x + 1 < size && board[start.x + 1][start.y] == EMPTY) {
+			if (check_util({ start.x + 1, start.y }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+
+		// UP
+		if (start.y - 1 >= 0 && board[start.x][start.y - 1] == EMPTY) {
+			if (check_util({ start.x, start.y - 1 }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+
+		// DOWN
+		if (start.y + 1 < size && board[start.x][start.y + 1] == EMPTY) {
+			if (check_util({ start.x, start.y + 1 }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+
+		// UP LEFT
+		if (start.x - 1 >= 0 && start.y - 1 >= 0 && board[start.x - 1][start.y - 1] == EMPTY) {
+			if (check_util({ start.x - 1, start.y - 1 }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+
+		// DOWN RIGHT
+		if (start.x + 1 < size && start.y + 1 < size && board[start.x + 1][start.y + 1] == EMPTY) {
+			if (check_util({ start.x + 1, start.y + 1 }, state, moves)) {
+				board[start.x][start.y] = EMPTY;
+				return true;
+			}
+		}
+		board[start.x][start.y] = EMPTY;
+	}
+
+	return false;
+}
+
 bool Board::canWinNaive(int moves, FIELD_STATE player) {
 	if(!isBoardPossible()) return false;
 	FIELD_STATE current_player;
+	// first we check if there is enough space on board
+
 	if (red == blue) {
 		current_player = RED;
-		if (player == RED && red + blue +)
+		if (player == RED) {
+			if (moves == 1 && red + blue + moves > size*size) {
+				return false;
+			}
+			else if (moves == 2 && red + blue + moves + 1 > size * size) {
+				return false;
+			}
+		}
+		else {
+			if (moves == 1 && red + blue + moves + 1 > size * size) {
+				return false;
+			}
+			else if (moves == 2 && red + blue + moves + moves > size * size) {
+				return false;
+			}
+		}
 	}
 	else {
 		current_player = BLUE;
+		if (player == RED) {
+			if (moves == 1 && red + blue + moves + 1 > size * size) {
+				return false;
+			 }
+			else if (moves == 2 && red + blue + moves + moves > size * size) {
+				return false;
+			}
+		}
+		else {
+			if (moves == 1 && red + blue + moves > size * size) {
+				return false;
+			}
+			else if (moves == 2 && red + blue + moves + 1 > size * size) {
+				return false;
+			}
+
+		}
 	}
 
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			if (board[i][j] == EMPTY) {
+				if (chceckAdjecent({ i, j }, player, moves)) {
+					return true;
+				}
+			}
+		}
+	}
 	return false;
 }
 

@@ -35,6 +35,8 @@ public:
 	bool isBoardCorrect();
 	FIELD_STATE isGameOver(); // reusing enum to tell who won EMPTY == NO
 	bool isBoardPossible();
+	bool check_util(Point offset, FIELD_STATE player, int moves);
+	bool chceckAdjecent(Point start, FIELD_STATE state, int moves);
 	bool canWinNaive(int moves, FIELD_STATE player);
 	int getSize();
 	int getRed();
