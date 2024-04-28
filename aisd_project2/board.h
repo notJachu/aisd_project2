@@ -35,6 +35,7 @@ public:
 	bool isBoardCorrect();
 	FIELD_STATE isGameOver(); // reusing enum to tell who won EMPTY == NO
 	bool isBoardPossible();
+	bool canWinNaive(int moves, FIELD_STATE player);
 	int getSize();
 	int getRed();
 	int getBlue();

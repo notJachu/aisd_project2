@@ -436,6 +436,20 @@ bool Board::isBoardPossible() {
 	return win_counter <= 1;
 }
 
+bool Board::canWinNaive(int moves, FIELD_STATE player) {
+	if(!isBoardPossible()) return false;
+	FIELD_STATE current_player;
+	if (red == blue) {
+		current_player = RED;
+		if (player == RED && red + blue +)
+	}
+	else {
+		current_player = BLUE;
+	}
+
+	return false;
+}
+
 int Board::getSize() {
 	return this->size;
 }
