@@ -441,12 +441,22 @@ bool Board::isBoardPossible() {
 bool Board::check_util(Point offset, FIELD_STATE player, int moves) {
 		board[offset.x][offset.y] = player;
 
-		FIELD_STATE winner = isGameOver();
-		if (winner == player) {
+		reached_bottom = 0;
+		reached_top = 0;
+		reset_visited();
+		traverse({ offset.x, offset.y }, player);
+		if (reached_bottom >= 1 && reached_top >= 1) {
 			board[offset.x][offset.y] = EMPTY;
+			reached_bottom = 0;
+			reached_top = 0;
 			return true;
 		}
-		board[offset.x][offset.y] = EMPTY;
+		else {
+			reached_bottom = 0;
+			reached_top = 0;
+			board[offset.x][offset.y] = EMPTY;
+			return false;
+		}
 		return false;
 }
 
@@ -461,52 +471,15 @@ bool Board::chceckAdjecent(Point start, FIELD_STATE state, int moves) {
 	else {
 
 		board[start.x][start.y] = state;
-
-		// LEFT
-		if (start.x - 1 >= 0 && board[start.x - 1][start.y] == EMPTY) {
-			if (check_util({ start.x - 1, start.y }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
-			}
-		}
-
-		// RIGHT
-		if (start.x + 1 < size && board[start.x + 1][start.y] == EMPTY) {
-			if (check_util({ start.x + 1, start.y }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
-			}
-		}
-
-		// UP
-		if (start.y - 1 >= 0 && board[start.x][start.y - 1] == EMPTY) {
-			if (check_util({ start.x, start.y - 1 }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
-			}
-		}
-
-		// DOWN
-		if (start.y + 1 < size && board[start.x][start.y + 1] == EMPTY) {
-			if (check_util({ start.x, start.y + 1 }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
-			}
-		}
-
-		// UP LEFT
-		if (start.x - 1 >= 0 && start.y - 1 >= 0 && board[start.x - 1][start.y - 1] == EMPTY) {
-			if (check_util({ start.x - 1, start.y - 1 }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
-			}
-		}
-
-		// DOWN RIGHT
-		if (start.x + 1 < size && start.y + 1 < size && board[start.x + 1][start.y + 1] == EMPTY) {
-			if (check_util({ start.x + 1, start.y + 1 }, state, moves)) {
-				board[start.x][start.y] = EMPTY;
-				return true;
+		// now we cry because easiest solution so 2 fields next to each other didn't work so we check all empty fields :c
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (board[i][j] == EMPTY) {
+					if (check_util({ i, j }, state, 1)) {
+						board[start.x][start.y] = EMPTY;
+						return true;
+					}
+				}
 			}
 		}
 		board[start.x][start.y] = EMPTY;
@@ -517,6 +490,8 @@ bool Board::chceckAdjecent(Point start, FIELD_STATE state, int moves) {
 
 bool Board::canWinNaive(int moves, FIELD_STATE player) {
 	if(!isBoardPossible()) return false;
+
+	if(isGameOver() != EMPTY) return false;
 	FIELD_STATE current_player;
 	// first we check if there is enough space on board
 
@@ -569,6 +544,7 @@ bool Board::canWinNaive(int moves, FIELD_STATE player) {
 			}
 		}
 	}
+
 	return false;
 }
 

@@ -21,8 +21,8 @@ int main() {
 	string input;
 	int counter = 1;
 
-	fstream file;
-	file.open("test.txt", ios::out);
+	//fstream file;
+	//file.open("test2.txt", ios::out);
 
 	while (cin.good()) {
 		getline(cin, input);
@@ -108,14 +108,15 @@ int main() {
 
 			if (board->canWinNaive(moves, player)) {
 				cout << "YES" << endl;
-				file << "YES" << endl;
+				//file << "YES" << endl;
 			}
 			else {
 				cout << "NO" << endl;
-				file << "NO" << endl;
+				//file << "NO" << endl;
 			}
 			if (counter == 4) {
-				file << endl;
+				//file << endl;
+				cout << endl;
 				counter = 0;
 			}
 			counter++;
@@ -124,6 +125,6 @@ int main() {
 
 	}
 	
-	file.close();
+	//file.close();
 	return 0;
 }
